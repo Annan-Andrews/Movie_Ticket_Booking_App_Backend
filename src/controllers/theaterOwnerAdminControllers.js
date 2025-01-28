@@ -132,5 +132,93 @@ const theaterOwnerAdminLogout = async (req, res, next) => {
   }
 }
 
+const editTheaterOwnerAdminProfile = async (req, res) => {
+  try {
+    const adminId = req.user.id; // Assuming `theaterOwnerAdminAuth` adds `req.user`
+    const { name, email, mobile, profilePic } = req.body;
 
-module.exports = {theaterOwnerAdminSignup, theaterOwnerAdminLogin, theaterOwnerAdminProfile, theaterOwnerAdminLogout}
+    const updatedData = {};
+    if (name) updatedData.name = name;
+    if (email) updatedData.email = email;
+    if (mobile) updatedData.mobile = mobile;
+    if (profilePic) updatedData.profilePic = profilePic;
+
+    const updatedAdmin = await TheaterOwnerAdmin.findByIdAndUpdate(adminId, updatedData, { new: true });
+
+    if (!updatedAdmin) {
+      return res.status(404).json({ message: "Theater Owner/Admin not found" });
+    }
+
+    res.status(200).json({ message: "Profile updated successfully", data: updatedAdmin });
+  } catch (error) {
+    res.status(500).json({ message: error.message || "Internal server error" });
+  }
+};
+
+
+const changeTheaterOwnerAdminPassword = async (req, res) => {
+  try {
+    const adminId = req.user.id;
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: "Current and new passwords are required" });
+    }
+
+    const admin = await TheaterOwnerAdmin.findById(adminId);
+    if (!admin) {
+      return res.status(404).json({ message: "Theater Owner/Admin not found" });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, admin.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Incorrect current password" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    admin.password = hashedPassword;
+
+    await admin.save();
+
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message || "Internal server error" });
+  }
+};
+
+const deactivateTheaterOwnerAdminAccount = async (req, res) => {
+  try {
+    const adminId = req.user.id;
+
+    const admin = await TheaterOwnerAdmin.findByIdAndUpdate(adminId, { isActive: false }, { new: true });
+    if (!admin) {
+      return res.status(404).json({ message: "Theater Owner/Admin not found" });
+    }
+
+    res.status(200).json({ message: "Account deactivated successfully", data: admin });
+  } catch (error) {
+    res.status(500).json({ message: error.message || "Internal server error" });
+  }
+};
+
+
+const checkOwnerAdmin = async (req, res, next) => {
+  try {
+    const OwnerAdminRole = req.user.role;
+
+    return res.json({ message: `${OwnerAdminRole === "admin" ? "Admin" : "Theater Owner"} autherized` });
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({ message: error.message || "Internal server error" });
+  }
+};
+
+module.exports = {
+  theaterOwnerAdminSignup, 
+  theaterOwnerAdminLogin, 
+  theaterOwnerAdminProfile, 
+  theaterOwnerAdminLogout, 
+  editTheaterOwnerAdminProfile,
+  changeTheaterOwnerAdminPassword,
+  deactivateTheaterOwnerAdminAccount,
+  checkOwnerAdmin, 
+}

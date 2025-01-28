@@ -33,10 +33,6 @@ const TheaterOwnerAdminSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
-  // theaters: [{
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'Theater',
-  // }]
 });
 
 const TheaterOwnerAdmin = mongoose.model('TheaterOwnerAdmin', TheaterOwnerAdminSchema);
