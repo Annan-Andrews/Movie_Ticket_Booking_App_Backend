@@ -26,6 +26,10 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get("/", (req, res) => {
+  res.send("Api Working");
+});
+
 app.use("/api", apiRouter);
 
 app.listen(port, () => {
