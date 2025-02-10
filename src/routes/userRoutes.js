@@ -10,7 +10,7 @@ const router = express.Router()
 router.post('/signup', userSignup)
 
 // login
-router.put('/login', userLogin)
+router.post('/login', userLogin)
 
 // profile
 router.get('/profile',userAuth, userProfile)

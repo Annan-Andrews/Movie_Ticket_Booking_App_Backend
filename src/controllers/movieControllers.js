@@ -44,7 +44,7 @@ const createMovie = async(req,res,next) =>{
 
 const getMovies = async (req, res, next) => {
   try {
-    const movieList = await movieModel.find().select("-description -duration -poster");
+    const movieList = await movieModel.find().select("-duration -poster");
 
     res.json({ data: movieList, message: "All movies fetched" });
   } catch (error) {
