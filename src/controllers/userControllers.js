@@ -212,7 +212,7 @@ const checkUser = async (req, res, next) => {
   try {
     console.log(req.user);
     
-    return res.json({ message: "user autherized" });
+    return res.json({ message: "user autherized", token: req.user });
   } catch (error) {
     return res
       .status(error.statusCode || 500)
