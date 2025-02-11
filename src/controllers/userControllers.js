@@ -210,6 +210,8 @@ const deactivateAccount = async (req, res) => {
 
 const checkUser = async (req, res, next) => {
   try {
+    console.log(req.user);
+    
     return res.json({ message: "user autherized" });
   } catch (error) {
     return res

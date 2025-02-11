@@ -2,7 +2,7 @@ const express = require("express");
 const connectDB = require("./src/config/db");
 const { apiRouter } = require("./src/routes");
 var cookieParser = require("cookie-parser");
-var cors = require("cors");
+const cors = require("cors");
 
 const app = express();
 
