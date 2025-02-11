@@ -1,20 +1,11 @@
 const multer = require('multer');
-const { diskStorage } = require('multer');
 
+// Multer Memory Storage (Direct Upload to Cloudinary)
+const storage = multer.memoryStorage();
 
-const storage = diskStorage({
-    filename: function (req, file, cb) {
-        
-        console.log('file===', file);
-       
-        cb(null, file.originalname); 
-    },
-});
-
-// Multer configuration to handle multiple fields (image and poster)
-const upload = multer({ storage: storage }).fields([
-    { name: 'image', maxCount: 1 },  // One image
-    { name: 'poster', maxCount: 1 }  // One poster
+const upload = multer({ storage }).fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'poster', maxCount: 1 }
 ]);
 
 module.exports = { upload };

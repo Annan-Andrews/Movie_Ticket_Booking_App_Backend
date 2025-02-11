@@ -19,10 +19,10 @@ router.get('/profile',userAuth, userProfile)
 router.get('/logout',userAuth, userLogout)
 
 // profile-edit
-router.put('/profile-edit', userAuth, editUserProfile);
+router.post('/profile-edit', userAuth, editUserProfile);
 
 // change-password
-router.put('/change-password', userAuth, changePassword);
+router.post('/change-password', userAuth, changePassword);
 
 // account-deactivate
 router.patch('/account-deactivate', userAuth, deactivateAccount);
