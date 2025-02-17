@@ -10,20 +10,18 @@ const theaterOwnerAdminSignup = async (req, res, next) => {
   try {
     const { name, email, password, mobile, profilePic, role } = req.body;
 
-    if (!name || !email || !password || !mobile || !role) {
+    if (!name || !email || !password || !mobile) {
       return res.status(400).json({ message: "all fields are required" });
     }
 
     const isOwnerAdminExist = await TheaterOwnerAdmin.findOne({ email });
 
     if (isOwnerAdminExist) {
-      return res
-        .status(400)
-        .json({
-          message: `${
-            role === "admin" ? "Admin" : "Theater Owner"
-          } already exists`,
-        });
+      return res.status(400).json({
+        message: `${
+          role === "admin" ? "Admin" : "Theater Owner"
+        } already exists`,
+      });
     }
 
     const hashedPassword = bcrypt.hashSync(password, saltRounds);
@@ -68,20 +66,18 @@ const theaterOwnerAdminLogin = async (req, res, next) => {
   try {
     const { email, password, role } = req.body;
 
-    if (!email || !password || !role) {
+    if (!email || !password) {
       return res.status(400).json({ message: "all fields are required" });
     }
 
     const OwnerAdminExist = await TheaterOwnerAdmin.findOne({ email });
 
     if (!OwnerAdminExist) {
-      return res
-        .status(404)
-        .json({
-          message: `${
-            role === "admin" ? "Admin" : "Theater Owner"
-          } does not exist`,
-        });
+      return res.status(404).json({
+        message: `${
+          role === "admin" ? "Admin" : "Theater Owner"
+        } does not exist`,
+      });
     }
 
     const passwordMatch = bcrypt.compareSync(
@@ -259,6 +255,7 @@ const checkOwnerAdmin = async (req, res, next) => {
       message: `${
         OwnerAdminRole === "admin" ? "Admin" : "Theater Owner"
       } autherized`,
+      token: req.user,
     });
   } catch (error) {
     return res

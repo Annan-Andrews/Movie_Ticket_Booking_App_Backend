@@ -1,6 +1,7 @@
 const express = require('express');
 const { userSignup, userLogin, userProfile, userLogout, checkUser, editUserProfile, changePassword, deactivateAccount } = require('../controllers/userControllers');
 const userAuth = require('../middleware/userAuth');
+const { upload } = require('../middleware/multer');
 const router = express.Router()
 
 
@@ -19,7 +20,7 @@ router.get('/profile',userAuth, userProfile)
 router.get('/logout',userAuth, userLogout)
 
 // profile-edit
-router.post('/profile-edit', userAuth, editUserProfile);
+router.post('/profile-edit', userAuth, upload, editUserProfile);
 
 // change-password
 router.post('/change-password', userAuth, changePassword);

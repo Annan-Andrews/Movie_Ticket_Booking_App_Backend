@@ -2,6 +2,7 @@
 const UserModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const generateToken = require("../utils/token");
+const { cloudinaryInstance } = require("../config/cloudinary");
 
 const NODE_ENV = process.env.NODE_ENV;
 
@@ -131,29 +132,50 @@ const userLogout = async (req, res, next) => {
 const editUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { name, email, mobile, profilePic } = req.body;
-
+    const { name, email, mobile } = req.body;
+    
     const updatedData = {};
+
     if (name) updatedData.name = name;
     if (email) updatedData.email = email;
     if (mobile) updatedData.mobile = mobile;
-    if (profilePic) updatedData.profilePic = profilePic;
 
-    const updatedUser = await UserModel.findByIdAndUpdate(userId, updatedData, {
-      new: true,
-    });
+
+    const uploadToCloudinary = (fileBuffer, folder) => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinaryInstance.uploader.upload_stream(
+          { folder },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        );
+        stream.end(fileBuffer);
+      });
+    };
+
+    // Handle Profile Picture Upload
+    if (req.files?.profilePic?.[0]) {
+      const cloudinaryResponse = await uploadToCloudinary(req.files.profilePic[0].buffer, 'profiles');
+      updatedData.profilePic = cloudinaryResponse.secure_url;
+    }
+
+    // Update User Profile in Database
+    const updatedUser = await UserModel.findByIdAndUpdate(userId, updatedData, { new: true });
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res
-      .status(200)
-      .json({ message: "Profile updated successfully", data: updatedUser });
+    res.status(200).json({
+      message: "Profile updated successfully",
+      data: updatedUser,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message || "Internal server error" });
   }
 };
+
 
 const changePassword = async (req, res) => {
   try {

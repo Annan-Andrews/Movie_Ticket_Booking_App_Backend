@@ -10,7 +10,7 @@ const router = express.Router()
 router.post('/signup', theaterOwnerAdminSignup)
 
 // login
-router.put('/login', theaterOwnerAdminLogin)
+router.post('/login', theaterOwnerAdminLogin)
 
 // profile
 router.get('/profile', theaterOwnerAdminAuth, theaterOwnerAdminProfile )

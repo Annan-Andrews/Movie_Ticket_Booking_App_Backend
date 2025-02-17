@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const movieModel = require('./movieModel')
+
 
 const theaterSchema = new mongoose.Schema(
   {
@@ -37,7 +37,7 @@ const theaterSchema = new mongoose.Schema(
     ],
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'UserModel', 
+      ref: 'TheaterOwnerAdmin', 
       required: true,
     },
     isActive: {

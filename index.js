@@ -6,17 +6,20 @@ const cors = require("cors");
 
 const app = express();
 
+app.use(express.json());
+
 app.use(
   cors({
     origin: ["http://localhost:5173", "https://movie-ticket-booking-app-frontend.vercel.app"],
-    methods: ["GET", "PUT", "POST", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
 
 const port = process.env.PORT;
 
-app.use(express.json());
+
 app.use(cookieParser());
 
 connectDB();

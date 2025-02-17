@@ -1,9 +1,10 @@
 const theaterModel = require("../models/theaterModel");
 const movieModel = require("../models/movieModel");
+const mongoose = require('mongoose');
 
-const createTheater = async(req,res,next) => {
+const createTheater = async (req, res, next) => {
   try {
-    const {name, location, seats} = req.body;
+    const { name, location, seats } = req.body;
 
     if (!name || !location || !seats) {
       return res.status(400).json({ message: "all fileds required" });
@@ -11,7 +12,11 @@ const createTheater = async(req,res,next) => {
 
     const ownerId = req.user.id;
 
-    const existingTheater = await theaterModel.findOne({ name, location, ownerId });
+    const existingTheater = await theaterModel.findOne({
+      name,
+      location,
+      ownerId,
+    });
     if (existingTheater) {
       return res.status(400).json({ message: "Theater already exists" });
     }
@@ -22,15 +27,16 @@ const createTheater = async(req,res,next) => {
       seats,
       movieSchedules: [],
       ownerId,
-    })
-    await theaterData.save()
+    });
+    await theaterData.save();
 
     res.json({ data: theaterData, message: "Theater created successfully" });
-    
   } catch (error) {
-    return res.status(error.statusCode || 500).json({ message: error.message || "Internal server error"});
+    return res
+      .status(error.statusCode || 500)
+      .json({ message: error.message || "Internal server error" });
   }
-}
+};
 
 const addMovieSchedules = async (req, res, next) => {
   try {
@@ -38,7 +44,9 @@ const addMovieSchedules = async (req, res, next) => {
     const { movieId, showTime, showDate, price } = req.body;
 
     if (!movieId || !showTime || !showDate || price === undefined) {
-      return res.status(400).json({ message: "All schedule fields are required" });
+      return res
+        .status(400)
+        .json({ message: "All schedule fields are required" });
     }
 
     const theater = await theaterModel.findById(theaterId);
@@ -48,7 +56,7 @@ const addMovieSchedules = async (req, res, next) => {
 
     const movie = await movieModel.findById(movieId);
     if (!movie) {
-      return res.status(404).json({ message: "Movie not found" })
+      return res.status(404).json({ message: "Movie not found" });
     }
 
     theater.movieSchedules.push({ movieId, showTime, showDate, price });
@@ -56,31 +64,65 @@ const addMovieSchedules = async (req, res, next) => {
 
     res.json({ data: theater, message: "Movie schedule added successfully" });
   } catch (error) {
-    return res.status(error.statusCode || 500).json({ message: error.message || "Internal server error"});
+    return res
+      .status(error.statusCode || 500)
+      .json({ message: error.message || "Internal server error" });
   }
 };
 
 const getAllTheaters = async (req, res, next) => {
   try {
-    const theaters = await theaterModel.find().select("-movieSchedules"); 
+    const theaters = await theaterModel.find().select("-movieSchedules");
     res.json({ data: theaters, message: "All theaters fetched successfully" });
   } catch (error) {
-    return res.status(error.statusCode || 500).json({ message: error.message || "Internal server error"});
+    return res
+      .status(error.statusCode || 500)
+      .json({ message: error.message || "Internal server error" });
   }
 };
 
 const getMovieSchedules = async (req, res, next) => {
   try {
     const { theaterId } = req.params;
-    const theater = await theaterModel.findById(theaterId).populate("movieSchedules.movieId");
-    
+    const theater = await theaterModel
+      .findById(theaterId)
+      .populate("movieSchedules.movieId");
+
     if (!theater) {
       return res.status(404).json({ message: "Theater not found" });
     }
 
-    res.json({ data: theater.movieSchedules, message: "Movie schedules fetched successfully" });
+    res.json({
+      data: theater.movieSchedules,
+      message: "Movie schedules fetched successfully",
+    });
   } catch (error) {
-    return res.status(error.statusCode || 500).json({ message: error.message || "Internal server error"});
+    return res
+      .status(error.statusCode || 500)
+      .json({ message: error.message || "Internal server error" });
+  }
+};
+
+const getMovieSchedulesbyOwnerId = async (req, res, next) => {
+  try {
+    const { ownerId } = req.params;
+    const movieSchedule = await theaterModel
+      .findOne({ ownerId })
+      .select("name movieSchedules")
+      .populate("movieSchedules.movieId", "title");
+
+    if (!movieSchedule) {
+      return res.status(404).json({ message: "movieSchedule not found" });
+    }
+
+    res.json({
+      data: movieSchedule,
+      message: "Movie schedules fetched successfully",
+    });
+  } catch (error) {
+    return res
+      .status(error.statusCode || 500)
+      .json({ message: error.message || "Internal server error" });
   }
 };
 
@@ -99,9 +141,14 @@ const updateTheater = async (req, res, next) => {
       return res.status(404).json({ message: "Theater not found" });
     }
 
-    res.json({ data: theater, message: "Theater details updated successfully" });
+    res.json({
+      data: theater,
+      message: "Theater details updated successfully",
+    });
   } catch (error) {
-    return res.status(error.statusCode || 500).json({ message: error.message || "Internal server error"});
+    return res
+      .status(error.statusCode || 500)
+      .json({ message: error.message || "Internal server error" });
   }
 };
 
@@ -116,7 +163,9 @@ const deleteTheater = async (req, res, next) => {
 
     res.json({ data: theater, message: "Theater deleted successfully" });
   } catch (error) {
-    return res.status(error.statusCode || 500).json({ message: error.message || "Internal server error"});
+    return res
+      .status(error.statusCode || 500)
+      .json({ message: error.message || "Internal server error" });
   }
 };
 
@@ -125,25 +174,116 @@ const getTheatersByMovie = async (req, res, next) => {
     const { movieId } = req.params;
 
     const theaters = await theaterModel.find({
-      "movieSchedules.movieId": movieId
+      "movieSchedules.movieId": movieId,
     });
 
     if (theaters.length === 0) {
-      return res.status(404).json({ message: "No theaters found for this movie" });
+      return res
+        .status(404)
+        .json({ message: "No theaters found for this movie" });
     }
 
-    res.json({ data: theaters, message: "Theaters for the movie fetched successfully" });
+    res.json({
+      data: theaters,
+      message: "Theaters for the movie fetched successfully",
+    });
   } catch (error) {
-    return res.status(500).json({ message: error.message || "Internal server error" });
+    return res
+      .status(500)
+      .json({ message: error.message || "Internal server error" });
   }
 };
 
+const getTheatersByOwnerId = async (req, res) => {
+  try {
+    const { ownerId } = req.params;
+
+    const theaters = await theaterModel
+      .find({ ownerId }) // Directly match ownerId
+      .populate("movieSchedules.movieId", "title genre duration rating") // Populate movie details
+      .lean(); // Improves performance by returning plain JS objects
+
+    if (!theaters.length) {
+      return res
+        .status(404)
+        .json({ message: "No theaters found for this owner" });
+    }
+
+    res
+      .status(200)
+      .json({ data: theaters, message: "Theaters fetched successfully" });
+  } catch (error) {
+    console.error("Error fetching theaters by ownerId:", error);
+    return res
+      .status(500)
+      .json({ message: error.message || "Internal server error" });
+  }
+};
+
+const getTheaterDetails = async (req, res, next) => {
+  try {
+    const { theaterId } = req.params;
+
+    const theater = await theaterModel
+      .findById(theaterId)
+      .populate("movieSchedules.movieId", "title");
+
+    if (!theater) {
+      return res.status(404).json({ message: "Theater not found" });
+    }
+
+    res.json({
+      data: theater,
+      message: "Theater details fetched successfully",
+    });
+  } catch (error) {
+    return res
+      .status(error.statusCode || 500)
+      .json({ message: error.message || "Internal server error" });
+  }
+};
+
+
+const deleteMovieScheduleByMovieId = async (req, res) => {
+  try {
+    const { movieId } = req.params;
+    const objectId = new mongoose.Types.ObjectId(movieId); // Convert to ObjectId
+
+    if (!movieId) {
+      return res.status(400).json({ success: false, message: "Movie ID is required" });
+    }
+
+    // Find and update theaters that have this movieId in their movieSchedules
+    const result = await theaterModel.updateMany(
+      { "movieSchedules.movieId": objectId }, // Find theaters with this movie in schedule
+      { $pull: { movieSchedules: { movieId: objectId } } } // Correct: Remove the movie schedule by movieId
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ success: false, message: "No schedules found for this movie ID" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Movie schedule deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting movie schedule:", error);
+    return res.status(500).json({ success: false, message: error.message || "Internal server error" });
+  }
+};
+
+
 module.exports = {
-  createTheater, 
-  addMovieSchedules, 
-  getAllTheaters, 
-  getMovieSchedules, 
-  updateTheater, 
-  deleteTheater, 
-  getTheatersByMovie
-}
+  createTheater,
+  addMovieSchedules,
+  getAllTheaters,
+  getMovieSchedules,
+  updateTheater,
+  deleteTheater,
+  getTheatersByMovie,
+  getTheatersByOwnerId,
+  getTheaterDetails,
+  getMovieSchedulesbyOwnerId,
+  deleteMovieScheduleByMovieId,
+};

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const TheaterOwnerAdminSchema = new mongoose.Schema({
   name: {
@@ -14,7 +14,7 @@ const TheaterOwnerAdminSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true
+    required: true,
   },
   mobile: {
     type: String,
@@ -22,12 +22,13 @@ const TheaterOwnerAdminSchema = new mongoose.Schema({
   },
   profilePic: {
     type: String,
-    default: 'https://www.kindpng.com/picc/m/722-7221920_placeholder-profile-image-placeholder-png-transparent-png.png', 
+    default:
+      "https://www.kindpng.com/picc/m/722-7221920_placeholder-profile-image-placeholder-png-transparent-png.png",
   },
   role: {
     type: String,
-    enum: ['theaterOwner', 'admin'], 
-    required: true
+    enum: ["theaterOwner", "admin"],
+    default: "theaterOwner",
   },
   isActive: {
     type: Boolean,
@@ -35,6 +36,9 @@ const TheaterOwnerAdminSchema = new mongoose.Schema({
   },
 });
 
-const TheaterOwnerAdmin = mongoose.model('TheaterOwnerAdmin', TheaterOwnerAdminSchema);
+const TheaterOwnerAdmin = mongoose.model(
+  "TheaterOwnerAdmin",
+  TheaterOwnerAdminSchema
+);
 
 module.exports = TheaterOwnerAdmin;

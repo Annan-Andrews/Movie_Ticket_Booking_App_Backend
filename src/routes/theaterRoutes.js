@@ -1,6 +1,6 @@
 const express = require('express');
 const theaterOwnerAdminAuth = require('../middleware/theaterOwnerAdminAuth');
-const { createTheater, addMovieSchedules, getAllTheaters, getMovieSchedules, updateTheater, deleteTheater, getTheatersByMovie } = require('../controllers/theaterControllers');
+const { createTheater, addMovieSchedules, getAllTheaters, getMovieSchedules, updateTheater, deleteTheater, getTheatersByMovie, getTheatersByOwnerId, getTheaterDetails, getMovieSchedulesbyOwnerId, deleteMovieScheduleByMovieId } = require('../controllers/theaterControllers');
 const router = express.Router()
 
 
@@ -14,18 +14,39 @@ router.post('/add-movie-schedules/:theaterId', theaterOwnerAdminAuth, addMovieSc
 // view-all-theater
 router.get('/view-all-theaters', getAllTheaters);
 
+// view-theater of specific theater owner
+router.get('/view-theater/:ownerId', theaterOwnerAdminAuth, getTheatersByOwnerId)
+
+
 // view-moive-shedules of specific theater
 router.get('/view-movie-schedules/:theaterId', getMovieSchedules);
 
 
+// view-all-moive-shedules of specific theater owner
+router.get('/movie-schedules/:ownerId', theaterOwnerAdminAuth, getMovieSchedulesbyOwnerId);
+
+
+// view-theater-details
+router.get('/get-theater-details/:theaterId', theaterOwnerAdminAuth, getTheaterDetails)
+
+
 // Update theater details
-router.put('/update-theater/:theaterId', theaterOwnerAdminAuth, updateTheater);
+router.post('/update-theater/:theaterId', theaterOwnerAdminAuth, updateTheater);
 
 // Delete a theater
-router.delete('/delete-theater/:theaterId', theaterOwnerAdminAuth, deleteTheater);
+router.post('/delete-theater/:theaterId', theaterOwnerAdminAuth, deleteTheater);
 
 // Get theaters by movie
 router.get('/get-theaters-by-movie/:movieId', getTheatersByMovie);
+
+
+// delete movieSchedule
+// router.post('/deleteMovieSchedule/:movieScheduleId', theaterOwnerAdminAuth, deleteMovieSchedule)
+
+
+
+// delete movieSchedules of specific movie  
+router.post('/delete-movieSchedule/:movieId', theaterOwnerAdminAuth, deleteMovieScheduleByMovieId)
 
 
 
