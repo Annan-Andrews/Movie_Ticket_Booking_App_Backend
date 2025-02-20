@@ -147,9 +147,10 @@ const theaterOwnerAdminLogout = async (req, res, next) => {
 
     // res.clearCookie("token");
     res.clearCookie("token", {
-      sameSite: NODE_ENV === "production" ? "None" : "Lax",
-      secure: NODE_ENV === "production",
-      httpOnly: NODE_ENV === "production",
+      path: "/", // Ensure it matches how it was set
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: process.env.NODE_ENV === "production",
     });
 
     return res.json({

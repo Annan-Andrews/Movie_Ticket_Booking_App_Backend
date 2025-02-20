@@ -4,8 +4,6 @@ const bcrypt = require("bcrypt");
 const generateToken = require("../utils/token");
 const { cloudinaryInstance } = require("../config/cloudinary");
 
-const NODE_ENV = process.env.NODE_ENV;
-
 const saltRounds = 10;
 
 const userSignup = async (req, res, next) => {
@@ -112,15 +110,18 @@ const userProfile = async (req, res, next) => {
   }
 };
 
+const NODE_ENV = process.env.NODE_ENV;
+
 const userLogout = async (req, res, next) => {
   try {
     // res.clearCookie("token");
     res.clearCookie("token", {
-      sameSite: NODE_ENV === "production" ? "None" : "Lax",
-      secure: NODE_ENV === "production",
-      httpOnly: NODE_ENV === "production",
+      path: "/", // Ensure it matches how it was set
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: process.env.NODE_ENV === "production",
     });
-
+    
     return res.json({ message: "User Logout success" });
   } catch (error) {
     return res
