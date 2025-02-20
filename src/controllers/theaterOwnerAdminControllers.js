@@ -264,6 +264,25 @@ const checkOwnerAdmin = async (req, res, next) => {
   }
 };
 
+const getTheaterOwner = async (req, res, next) => {
+  try {
+    const theaterOwnerList = await TheaterOwnerAdmin.find({
+      role: "theaterOwner",
+    }).select("-password");
+
+    res.status(200).json({
+      success: true,
+      data: theaterOwnerList,
+      message: "All Theater Owners fetched successfully",
+    });
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Internal server error",
+    });
+  }
+};
+
 module.exports = {
   theaterOwnerAdminSignup,
   theaterOwnerAdminLogin,
@@ -273,4 +292,5 @@ module.exports = {
   changeTheaterOwnerAdminPassword,
   deactivateTheaterOwnerAdminAccount,
   checkOwnerAdmin,
+  getTheaterOwner,
 };

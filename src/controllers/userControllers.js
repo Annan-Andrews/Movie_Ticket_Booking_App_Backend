@@ -133,13 +133,12 @@ const editUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
     const { name, email, mobile } = req.body;
-    
+
     const updatedData = {};
 
     if (name) updatedData.name = name;
     if (email) updatedData.email = email;
     if (mobile) updatedData.mobile = mobile;
-
 
     const uploadToCloudinary = (fileBuffer, folder) => {
       return new Promise((resolve, reject) => {
@@ -156,12 +155,17 @@ const editUserProfile = async (req, res) => {
 
     // Handle Profile Picture Upload
     if (req.files?.profilePic?.[0]) {
-      const cloudinaryResponse = await uploadToCloudinary(req.files.profilePic[0].buffer, 'profiles');
+      const cloudinaryResponse = await uploadToCloudinary(
+        req.files.profilePic[0].buffer,
+        "profiles"
+      );
       updatedData.profilePic = cloudinaryResponse.secure_url;
     }
 
     // Update User Profile in Database
-    const updatedUser = await UserModel.findByIdAndUpdate(userId, updatedData, { new: true });
+    const updatedUser = await UserModel.findByIdAndUpdate(userId, updatedData, {
+      new: true,
+    });
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
@@ -175,7 +179,6 @@ const editUserProfile = async (req, res) => {
     res.status(500).json({ message: error.message || "Internal server error" });
   }
 };
-
 
 const changePassword = async (req, res) => {
   try {
@@ -233,12 +236,29 @@ const deactivateAccount = async (req, res) => {
 const checkUser = async (req, res, next) => {
   try {
     console.log(req.user);
-    
+
     return res.json({ message: "user autherized", token: req.user });
   } catch (error) {
     return res
       .status(error.statusCode || 500)
       .json({ message: error.message || "Internal server error" });
+  }
+};
+
+const getUsers = async (req, res, next) => {
+  try {
+    const userList = await UserModel.find().select("-password");
+
+    res.status(200).json({
+      success: true,
+      data: userList,
+      message: "All users fetched successfully",
+    });
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Internal server error",
+    });
   }
 };
 
@@ -251,4 +271,5 @@ module.exports = {
   changePassword,
   deactivateAccount,
   checkUser,
+  getUsers,
 };

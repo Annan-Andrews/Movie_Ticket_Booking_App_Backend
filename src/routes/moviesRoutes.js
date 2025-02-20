@@ -1,6 +1,6 @@
 const express = require('express');
 const theaterOwnerAdminAuth = require('../middleware/theaterOwnerAdminAuth');
-const { createMovie, getMovies, getMovieDetails, deleteMovie, searchMovies, getMoviesByOwnerId, editMovie } = require('../controllers/movieControllers');
+const { createMovie, getMovies, getMovieDetails, deleteMovie, searchMovies, getMoviesByOwnerId, editMovie, filterMovies } = require('../controllers/movieControllers');
 const { upload } = require('../middleware/multer');
 const router = express.Router();
 
@@ -18,6 +18,9 @@ router.get('/view-movies/:ownerId', theaterOwnerAdminAuth, getMoviesByOwnerId)
 
 // Search movies
 router.get('/search-movies', searchMovies);
+
+router.get('/filter-movies', filterMovies);
+
 
 // Get details of a specific movie
 router.get('/get-movie-details/:movieId',getMovieDetails);

@@ -1,33 +1,15 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const bookingSchema = new mongoose.Schema(
   {
-    showTime: {
-      type: String,
-      required: true,
-    },
-    showDate: {
-      type: Date,
-      required: true,
-    },
-    movieId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'movie',
-      required: true,
-    },
-    theaterId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Theater',
+    scheduleDetails: {
+      type: Object,
       required: true,
     },
     seats: [
       {
-        seat_no: {
+        seatId: {
           type: String,
-          required: true,
-        },
-        price: {
-          type: Number,
           required: true,
         },
       },
@@ -36,46 +18,24 @@ const bookingSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    paymentId: {
-      type: String,
-      required: true,
-    },
-    paymentType: {
+    sessionId: {
       type: String,
       required: true,
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'user',
-      required: true,
-    },
-    paymentStatus: {
-      type: String,
-      enum: ["Pending", "Completed", "Failed"],
-      default: "Pending",
+      ref: "user",
       required: true,
     },
     bookingStatus: {
       type: String,
       enum: ["Confirmed", "Cancelled", "Pending"],
-      default: "Confirmed",
-    },
-    bookingDate: {
-      type: Date,
-      default: Date.now, 
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now, 
-    },
-    updatedAt: {
-      type: Date,
-      default: Date.now, 
+      default: "Pending",
     },
   },
   { timestamps: true }
 );
 
-const bookingModel = mongoose.model('Booking', bookingSchema);
+const Booking = mongoose.model("Booking", bookingSchema);
 
-module.exports = bookingModel;
+module.exports = Booking;

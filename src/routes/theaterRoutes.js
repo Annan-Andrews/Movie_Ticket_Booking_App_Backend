@@ -1,6 +1,6 @@
 const express = require('express');
 const theaterOwnerAdminAuth = require('../middleware/theaterOwnerAdminAuth');
-const { createTheater, addMovieSchedules, getAllTheaters, getMovieSchedules, updateTheater, deleteTheater, getTheatersByMovie, getTheatersByOwnerId, getTheaterDetails, getMovieSchedulesbyOwnerId, deleteMovieScheduleByMovieId } = require('../controllers/theaterControllers');
+const { createTheater, addMovieSchedules, getAllTheaters, getMovieSchedules, updateTheater, deleteTheater, getTheatersByMovie, getTheatersByOwnerId, getTheaterDetails, getMovieSchedulesbyOwnerId, deleteMovieScheduleByMovieId, getMovieScheduleByScheduleId, getAllMovieSchedules } = require('../controllers/theaterControllers');
 const router = express.Router()
 
 
@@ -15,8 +15,11 @@ router.post('/add-movie-schedules/:theaterId', theaterOwnerAdminAuth, addMovieSc
 router.get('/view-all-theaters', getAllTheaters);
 
 // view-theater of specific theater owner
-router.get('/view-theater/:ownerId', theaterOwnerAdminAuth, getTheatersByOwnerId)
+router.get('/get-schedule/:scheduleId', getMovieScheduleByScheduleId)
 
+
+// view-theater of specific theater owner
+router.get('/view-theater/:ownerId', theaterOwnerAdminAuth, getTheatersByOwnerId)
 
 // view-moive-shedules of specific theater
 router.get('/view-movie-schedules/:theaterId', getMovieSchedules);
@@ -26,8 +29,12 @@ router.get('/view-movie-schedules/:theaterId', getMovieSchedules);
 router.get('/movie-schedules/:ownerId', theaterOwnerAdminAuth, getMovieSchedulesbyOwnerId);
 
 
+// view-all-moive-shedules
+router.get('/all-movie-schedules', theaterOwnerAdminAuth, getAllMovieSchedules);
+
+
 // view-theater-details
-router.get('/get-theater-details/:theaterId', theaterOwnerAdminAuth, getTheaterDetails)
+router.get('/get-theater-details/:theaterId', getTheaterDetails)
 
 
 // Update theater details

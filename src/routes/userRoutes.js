@@ -1,5 +1,5 @@
 const express = require('express');
-const { userSignup, userLogin, userProfile, userLogout, checkUser, editUserProfile, changePassword, deactivateAccount } = require('../controllers/userControllers');
+const { userSignup, userLogin, userProfile, userLogout, checkUser, editUserProfile, changePassword, deactivateAccount, getUsers } = require('../controllers/userControllers');
 const userAuth = require('../middleware/userAuth');
 const { upload } = require('../middleware/multer');
 const router = express.Router()
@@ -15,6 +15,9 @@ router.post('/login', userLogin)
 
 // profile
 router.get('/profile',userAuth, userProfile)
+
+// All users
+router.get('/get-all-users',userAuth, getUsers)
  
 // logout
 router.get('/logout',userAuth, userLogout)

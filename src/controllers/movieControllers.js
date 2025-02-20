@@ -252,6 +252,40 @@ const searchMovies = async (req, res, next) => {
   }
 };
 
+const filterMovies = async (req, res, next) => {
+  try {
+    const { genre, language } = req.query;
+    if (!genre && !language) {
+      return res
+        .status(400)
+        .json({ message: "At least one filter is required" });
+    }
+
+    const filter = {};
+    if (genre) {
+      const genresArray = genre.split("|"); // Supports multiple genres
+      filter.genre = { $in: genresArray.map((g) => new RegExp(g, "i")) };
+    }
+    if (language) {
+      const languagesArray = language.split("|");
+      filter.language = { $in: languagesArray.map((l) => new RegExp(l, "i")) };
+    }
+
+    const movies = await movieModel.find(filter);
+    if (movies.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No movies found matching the filters" });
+    }
+
+    res.json({ data: movies, message: "Filtered movies list" });
+  } catch (error) {
+    return res
+      .status(error.statusCode || 500)
+      .json({ message: error.message || "Internal server error" });
+  }
+};
+
 const getMoviesByOwnerId = async (req, res) => {
   try {
     const { ownerId } = req.params;
@@ -285,4 +319,5 @@ module.exports = {
   searchMovies,
   getMoviesByOwnerId,
   editMovie,
+  filterMovies,
 };

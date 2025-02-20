@@ -1,5 +1,5 @@
 const express = require('express');
-const {theaterOwnerAdminSignup, theaterOwnerAdminLogin, theaterOwnerAdminProfile, theaterOwnerAdminLogout, editTheaterOwnerAdminProfile, checkOwnerAdmin, changeTheaterOwnerAdminPassword, deactivateTheaterOwnerAdminAccount} = require('../controllers/theaterOwnerAdminControllers');
+const {theaterOwnerAdminSignup, theaterOwnerAdminLogin, theaterOwnerAdminProfile, theaterOwnerAdminLogout, editTheaterOwnerAdminProfile, checkOwnerAdmin, changeTheaterOwnerAdminPassword, deactivateTheaterOwnerAdminAccount, getTheaterOwner} = require('../controllers/theaterOwnerAdminControllers');
 const theaterOwnerAdminAuth = require('../middleware/theaterOwnerAdminAuth');
 const router = express.Router()
 
@@ -14,6 +14,9 @@ router.post('/login', theaterOwnerAdminLogin)
 
 // profile
 router.get('/profile', theaterOwnerAdminAuth, theaterOwnerAdminProfile )
+
+// get All theater owners
+router.get('/get-all-theaterOwners', theaterOwnerAdminAuth, getTheaterOwner )
 
 // logout
 router.get('/logout', theaterOwnerAdminAuth, theaterOwnerAdminLogout)
