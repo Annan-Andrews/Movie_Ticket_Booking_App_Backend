@@ -139,7 +139,7 @@ const getMovieSchedulesbyOwnerId = async (req, res, next) => {
   try {
     const { ownerId } = req.params;
     const movieSchedule = await theaterModel
-      .findOne({ ownerId })
+      .find({ ownerId })
       .select("name movieSchedules")
       .populate("movieSchedules.movieId", "title");
 
@@ -158,10 +158,8 @@ const getMovieSchedulesbyOwnerId = async (req, res, next) => {
   }
 };
 
-
 const getAllMovieSchedules = async (req, res, next) => {
   try {
-    
     const movieSchedule = await theaterModel
       .find()
       .select("name movieSchedules")
@@ -229,9 +227,20 @@ const getTheatersByMovie = async (req, res, next) => {
   try {
     const { movieId } = req.params;
 
-    const theaters = await theaterModel.find({
-      "movieSchedules.movieId": movieId,
-    });
+    let theaters = await theaterModel.find(
+      { "movieSchedules.movieId": movieId },
+      { name: 1, location: 1, ownerId: 1, isActive: 1, movieSchedules: 1 }
+    );
+
+    theaters = theaters.map((theater) => ({
+      name: theater.name,
+      location: theater.location,
+      ownerId: theater.ownerId,
+      isActive: theater.isActive,
+      movieSchedules: theater.movieSchedules.filter(
+        (schedule) => schedule.movieId.toString() === movieId.toString()
+      ),
+    }));
 
     if (theaters.length === 0) {
       return res
@@ -359,7 +368,6 @@ const getMovieScheduleByScheduleId = async (req, res) => {
       return res.status(404).json({ message: "Schedule not found" });
     }
 
-    
     res.json({
       data: { theaterName: theater.name, schedule },
       message: "Movie schedule fetched successfully",
