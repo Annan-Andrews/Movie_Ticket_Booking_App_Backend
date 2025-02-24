@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const generateToken = require("../utils/token");
 const TheaterOwnerAdmin = require("../models/theaterOwnerAdminModel");
+const { cloudinaryInstance } = require("../config/cloudinary");
 
 const NODE_ENV = process.env.NODE_ENV;
 
@@ -168,14 +169,36 @@ const theaterOwnerAdminLogout = async (req, res, next) => {
 
 const editTheaterOwnerAdminProfile = async (req, res) => {
   try {
-    const adminId = req.user.id; // Assuming `theaterOwnerAdminAuth` adds `req.user`
-    const { name, email, mobile, profilePic } = req.body;
+    const adminId = req.user.id; 
+    const { name, email, mobile } = req.body;
 
     const updatedData = {};
+
     if (name) updatedData.name = name;
     if (email) updatedData.email = email;
     if (mobile) updatedData.mobile = mobile;
-    if (profilePic) updatedData.profilePic = profilePic;
+
+    const uploadToCloudinary = (fileBuffer, folder) => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinaryInstance.uploader.upload_stream(
+          { folder },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        );
+        stream.end(fileBuffer);
+      });
+    };
+
+    // Handle Profile Picture Upload
+    if (req.files?.profilePic?.[0]) {
+      const cloudinaryResponse = await uploadToCloudinary(
+        req.files.profilePic[0].buffer,
+        "profiles"
+      );
+      updatedData.profilePic = cloudinaryResponse.secure_url;
+    }
 
     const updatedAdmin = await TheaterOwnerAdmin.findByIdAndUpdate(
       adminId,

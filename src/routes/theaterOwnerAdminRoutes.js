@@ -1,6 +1,7 @@
 const express = require('express');
 const {theaterOwnerAdminSignup, theaterOwnerAdminLogin, theaterOwnerAdminProfile, theaterOwnerAdminLogout, editTheaterOwnerAdminProfile, checkOwnerAdmin, changeTheaterOwnerAdminPassword, deactivateTheaterOwnerAdminAccount, getTheaterOwner} = require('../controllers/theaterOwnerAdminControllers');
 const theaterOwnerAdminAuth = require('../middleware/theaterOwnerAdminAuth');
+const { upload } = require('../middleware/multer');
 const router = express.Router()
 
 
@@ -22,10 +23,10 @@ router.get('/get-all-theaterOwners', theaterOwnerAdminAuth, getTheaterOwner )
 router.get('/logout', theaterOwnerAdminAuth, theaterOwnerAdminLogout)
 
 // profile-edit
-router.put('/profile-edit', theaterOwnerAdminAuth, editTheaterOwnerAdminProfile);
+router.post('/profile-edit', theaterOwnerAdminAuth, upload, editTheaterOwnerAdminProfile);
 
 // change-password
-router.put('/change-password', theaterOwnerAdminAuth, changeTheaterOwnerAdminPassword);
+router.post('/change-password', theaterOwnerAdminAuth, changeTheaterOwnerAdminPassword);
 
 // account-deactivate
 router.patch('/account-deactivate', theaterOwnerAdminAuth, deactivateTheaterOwnerAdminAccount);

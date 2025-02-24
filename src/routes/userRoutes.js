@@ -2,6 +2,7 @@ const express = require('express');
 const { userSignup, userLogin, userProfile, userLogout, checkUser, editUserProfile, changePassword, deactivateAccount, getUsers } = require('../controllers/userControllers');
 const userAuth = require('../middleware/userAuth');
 const { upload } = require('../middleware/multer');
+const theaterOwnerAdminAuth = require('../middleware/theaterOwnerAdminAuth');
 const router = express.Router()
 
 
@@ -29,7 +30,7 @@ router.post('/profile-edit', userAuth, upload, editUserProfile);
 router.post('/change-password', userAuth, changePassword);
 
 // account-deactivate
-router.patch('/account-deactivate', userAuth, deactivateAccount);
+router.patch('/account-deactivate', theaterOwnerAdminAuth, deactivateAccount);
 
 // check-user
 router.get("/check-user", userAuth, checkUser);
