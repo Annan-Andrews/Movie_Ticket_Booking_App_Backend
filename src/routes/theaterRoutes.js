@@ -14,7 +14,7 @@ router.post('/add-movie-schedules/:theaterId', theaterOwnerAdminAuth, addMovieSc
 // view-all-theater
 router.get('/view-all-theaters', getAllTheaters);
 
-// view-theater of specific theater owner
+// get schedule details by scheduleId
 router.get('/get-schedule/:scheduleId', getMovieScheduleByScheduleId)
 
 

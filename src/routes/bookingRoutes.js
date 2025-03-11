@@ -1,6 +1,7 @@
 const express = require('express');
 const userAuth = require('../middleware/userAuth');
-const { createBooking, getUserBookings, getBookingDetails, updateBookingStatus, deleteBooking } = require('../controllers/bookingControllers');
+const { getUserBookings, getBookingDetails, getBookingsByScheduleId } = require('../controllers/bookingControllers');
+const theaterOwnerAdminAuth = require('../middleware/theaterOwnerAdminAuth');
 const router = express.Router();
 
 // Create a booking
@@ -12,10 +13,9 @@ router.get('/user-bookings', userAuth, getUserBookings);
 // Get booking details 
 router.get('/booking-details/:bookingId', userAuth, getBookingDetails);
 
-// Update booking status
-// router.patch('/update-booking/:bookingId', userAuth, updateBookingStatus);
 
-// Delete a booking
-// router.delete('/delete-booking/:bookingId', userAuth, deleteBooking);
+// Get All Bookings by ScheduleId
+router.get('/all-bookings/:scheduleId', theaterOwnerAdminAuth, getBookingsByScheduleId)
+
 
 module.exports = { bookingRouter: router };

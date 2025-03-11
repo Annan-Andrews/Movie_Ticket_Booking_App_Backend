@@ -1,6 +1,5 @@
 const Booking = require("../models/bookingModel");
 
-
 // const createBooking = async (req, res) => {
 //   try {
 //     const {
@@ -55,7 +54,7 @@ const getUserBookings = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const bookings = await Booking.find({ userId }).sort({ createdAt: -1 });
+    const bookings = await Booking.find({ userId, bookingStatus: "Confirmed", }).sort({ createdAt: -1 });
 
     if (!bookings.length) {
       return res.status(404).json({ message: "No bookings found" });
@@ -94,11 +93,27 @@ const getBookingDetails = async (req, res) => {
   }
 };
 
+const getBookingsByScheduleId = async (req, res) => {
+  try {
+    const { scheduleId } = req.params;
 
+    const bookings = await Booking.find({
+      "scheduleDetails.schedule._id": scheduleId,
+      bookingStatus: "Confirmed",
+    }).populate("userId", "name email");
+
+    res
+      .status(200)
+      .json({ data: bookings, message: "All Bookings fetched successfully" });
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
+    res.status(500).json({ message: error.message || "Internal server error" });
+  }
+};
 
 module.exports = {
   // createBooking,
   getUserBookings,
   getBookingDetails,
-  
+  getBookingsByScheduleId,
 };

@@ -116,22 +116,24 @@ const getAllTheaters = async (req, res, next) => {
 const getMovieSchedules = async (req, res, next) => {
   try {
     const { theaterId } = req.params;
+
     const theater = await theaterModel
       .findById(theaterId)
-      .populate("movieSchedules.movieId");
+      .select(
+        "movieSchedules.movieId movieSchedules.showTime movieSchedules.showDate"
+      );
 
     if (!theater) {
       return res.status(404).json({ message: "Theater not found" });
     }
 
-    res.json({
+    return res.status(200).json({
       data: theater.movieSchedules,
-      message: "Movie schedules fetched successfully",
+      message: "Movie schedules Date&Time fetched successfully",
     });
   } catch (error) {
-    return res
-      .status(error.statusCode || 500)
-      .json({ message: error.message || "Internal server error" });
+    console.error("Error fetching movie schedules:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -369,7 +371,7 @@ const getMovieScheduleByScheduleId = async (req, res) => {
     }
 
     res.json({
-      data: { theaterName: theater.name, schedule },
+      data: { theaterName: theater.name, theaterId: theater._id, schedule },
       message: "Movie schedule fetched successfully",
     });
   } catch (error) {
